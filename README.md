@@ -12,6 +12,8 @@ We provide our pre-trained models in both Tensorflow and Pytorch versions. Pre-t
 
     Med-BERT Tendorflow vesrion
     Med-BERT Pytorch version (converted using hugging face transformers-cli convert API)
+
+#### Introduction to Cerner Health Facts and the User Agreement
     
 ## Reproduce Med-BERT
 #### Pretraining
