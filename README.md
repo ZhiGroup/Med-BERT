@@ -6,7 +6,7 @@ Med-Bert adapts bidirectional encoder representations from transformers (BERT) f
  ![Med-BERT_Structure](Med-BERT_Structure.jpg)
 Please refer to our paper Med-BERT: pre-trained contextualized embeddings on large-scale structured electronic health records for disease prediction
 
- ![Med-BERT Results](Med-BERT results.jpg)
+ ![Med-BERT Results](Med-BERT%20results.jpg)
 
 ## Download
 
