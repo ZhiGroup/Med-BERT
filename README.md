@@ -13,7 +13,7 @@ We provide our pre-trained models in both Tensorflow and Pytorch versions. Pre-t
     Med-BERT Tendorflow vesrion
     Med-BERT Pytorch version (converted using hugging face transformers-cli convert API)
 
-#### Introduction to Cerner Health Facts and the User Agreement
+#### Introduction to Cerner Health Facts and the User Agreement -- we dopn't need now
     
 ## Reproduce Med-BERT
 #### Pretraining
@@ -45,6 +45,9 @@ Kindly note that you need to use the following code for preparing the finetunnin
 
 ### Results
  ![Med-BERT Results](Med-BERT%20results.jpg)
+ 
+ Add caption to figure and the AUC table
+ 
 ### Contact
 
 Please post a Github issue if you have any questions.
@@ -52,7 +55,7 @@ Please post a Github issue if you have any questions.
 ### Citation
 
 Please acknowledge the following work in papers or derivative software:
-[to add citation here]
+[to add Arxiv citation here]
 
 
 
