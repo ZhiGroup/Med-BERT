@@ -1,1 +1,4 @@
 A DUA need to be signed in order to access the vocab dictionary file 
+
+
+take out and add the vocab file
