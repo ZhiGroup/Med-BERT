@@ -11,7 +11,7 @@ Please refer to our paper Med-BERT: pre-trained contextualized embeddings on lar
 We provide our pre-trained models in both Tensorflow and Pytorch versions. Pre-training was based on the original BERT code provided by Google, and pre-training details are described in our paper. 
 
     Med-BERT Tendorflow vesrion
-    Med-BERT Pytorch version (converted using hugging face transformers-cli convert API)
+    ![Med-BERT Pytorch version](Pre_Trained Models/Pytorch version/pytorch_model.bin) (converted using hugging face transformers-cli convert API)
 
 #### Introduction to Cerner Health Facts and the User Agreement -- we dopn't need now
     
@@ -56,6 +56,13 @@ Please post a Github issue if you have any questions.
 
 Please acknowledge the following work in papers or derivative software:
 [to add Arxiv citation here]
-
+@misc{rasmy2020medbert,
+    title={Med-BERT: pre-trained contextualized embeddings on large-scale structured electronic health records for disease prediction},
+    author={Laila Rasmy and Yang Xiang and Ziqian Xie and Cui Tao and Degui Zhi},
+    year={2020},
+    eprint={2005.12833},
+    archivePrefix={arXiv},
+    primaryClass={cs.CL}
+}
 
 
