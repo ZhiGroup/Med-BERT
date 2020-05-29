@@ -44,9 +44,8 @@ Kindly note that you need to use the following code for preparing the finetunnin
     
 
 ### Results
- ![Med-BERT Results](Med-BERT%20results.jpg)
- 
- Add caption to figure and the AUC table
+ ![Med-BERT Results](Med-BERT%20results.jpg) 
+<B>Prediction results for the evaluation sets by training on different sizes of data on DHF-Cerner (top), PaCa-Cerner (middle), and PaCa-Truven (bottom). The shadows indicate the standard deviations.
  
 ### Contact
 
