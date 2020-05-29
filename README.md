@@ -3,7 +3,7 @@ This repository provides the code for pretraining and fine-tuning Med-BERT,conte
 
 ### Overview
 Med-Bert adapts bidirectional encoder representations from transformers (BERT) framework pre-training contextualized embeddings for diagnosis codes mainly in ICD-9 and ICD-10 format using structured data from 28,490,650 patients EHR dataset. 
- ![Med-BERT_Structure](Med-BERT_Structure.jpg)
+ ![Med-BERT_Structure](Med-BERT_Structure.png)
 Please refer to our paper [Med-BERT: pre-trained contextualized embeddings on large-scale structured electronic health records for disease prediction](https://arxiv.org/abs/2005.12833)
 
 ## Download
