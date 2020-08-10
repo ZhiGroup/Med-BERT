@@ -53,14 +53,8 @@ Please post a Github issue if you have any questions.
 ### Citation
 
 Please acknowledge the following work in papers or derivative software:
-[to add Arxiv citation here]
-@misc{rasmy2020medbert,
-    title={Med-BERT: pre-trained contextualized embeddings on large-scale structured electronic health records for disease prediction},
-    author={Laila Rasmy and Yang Xiang and Ziqian Xie and Cui Tao and Degui Zhi},
-    year={2020},
-    eprint={2005.12833},
-    archivePrefix={arXiv},
-    primaryClass={cs.CL}
+Rasmy, Laila, Yang Xiang, Ziqian Xie, Cui Tao, and Degui Zhi. "Med-BERT: pre-trained contextualized embeddings on large-scale structured electronic health records for disease prediction." arXiv preprint arXiv:2005.12833 (2020).
+
 }
 
 
