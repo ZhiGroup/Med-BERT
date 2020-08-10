@@ -53,8 +53,8 @@ Please post a Github issue if you have any questions.
 ### Citation
 
 Please acknowledge the following work in papers or derivative software:
+
 Rasmy, Laila, Yang Xiang, Ziqian Xie, Cui Tao, and Degui Zhi. "Med-BERT: pre-trained contextualized embeddings on large-scale structured electronic health records for disease prediction." arXiv preprint arXiv:2005.12833 (2020).
 
-}
 
 
