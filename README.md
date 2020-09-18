@@ -21,7 +21,7 @@ To reproduce the steps necessary to pre-Train Med-BERT
 
     python data_preprocess.py 
     python create_ehr_pretrain_data.py
-    python run_EHRpretraining.py
+    python run_EHRpretraining.py   ##(Tensorflow Based)
 
 #### Finetuning Tutorial
 
