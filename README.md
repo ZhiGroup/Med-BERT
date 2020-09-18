@@ -10,7 +10,7 @@ Please refer to our paper [Med-BERT: pre-trained contextualized embeddings on la
 
 We provide our pre-trained models in both Tensorflow and Pytorch versions. Pre-training was based on the original BERT code provided by Google, and pre-training details are described in our paper. 
 
-    Med-BERT Tendorflow vesrion
+    Med-BERT Tendorflow version
    [Med-BERT Pytorch version](Pre_Trained Models/Pytorch version/pytorch_model.bin) (converted using hugging face transformers-cli convert API)
 
    
