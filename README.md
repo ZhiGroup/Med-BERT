@@ -6,14 +6,7 @@ Med-Bert adapts bidirectional encoder representations from transformers (BERT) f
  ![Med-BERT_Structure](Med-BERT_Structure.png)
 Please refer to our paper [Med-BERT: pre-trained contextualized embeddings on large-scale structured electronic health records for disease prediction](https://arxiv.org/abs/2005.12833) for more details.
 
-## Download
-
-We provide our pre-trained models in both the Tensorflow and Pytorch versions. Pre-training was based on the original BERT code provided by Google, and the pre-training details are described in our paper. 
-
-    Med-BERT Tensorflow version
-   [Med-BERT Pytorch version](Pre_Trained Models/Pytorch version/pytorch_model.bin) (converted using hugging face transformers-cli convert API)
-
-   
+  
 ## Reproduce Med-BERT
 #### Pretraining
 
