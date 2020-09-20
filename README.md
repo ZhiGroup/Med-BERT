@@ -12,9 +12,9 @@ Please refer to our paper [Med-BERT: pre-trained contextualized embeddings on la
 
 To reproduce the steps necessary for pre-training Med-BERT
 
-    python data_preprocess.py 
-    python create_ehr_pretrain_data.py
-    python run_EHRpretraining.py   ##(Tensorflow Based)
+    python preprocess_pretrain_data.py <data_File> <vocab/'NA'> <output_Prefix> <subset_size/0forAll>
+    python create_BERTpretrain_EHRfeatures.py --input_file= <output_Prefix.bencs.train> --output_file='output_file' --vocab_file=<output_Prefix.types>--max_predictions_per_seq=1 --max_seq_length=64
+    python run_EHRpretraining.py --input_file='output_file' --output_dir=<path_to_outputfolder> --do_train=True --do_eval=True --bert_config_file=config.json --train_batch_size=32 --max_seq_length=512 --max_predictions_per_seq=1 --num_train_steps=4500000   --num_warmup_steps=10000 --learning_rate=5e-5
 
 #### Fine-tuning Tutorial
 
