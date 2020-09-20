@@ -16,11 +16,11 @@ To reproduce the steps necessary for pre-training Med-BERT
     python create_BERTpretrain_EHRfeatures.py --input_file= <output_Prefix.bencs.train> --output_file='output_file' --vocab_file=<output_Prefix.types>--max_predictions_per_seq=1 --max_seq_length=64
     python run_EHRpretraining.py --input_file='output_file' --output_dir=<path_to_outputfolder> --do_train=True --do_eval=True --bert_config_file=config.json --train_batch_size=32 --max_seq_length=512 --max_predictions_per_seq=1 --num_train_steps=4500000   --num_warmup_steps=10000 --learning_rate=5e-5
 
-You can find an example for the construction of the data_file under ![Example data](Pretraining Code/Data Pre-processing Code/Example data) as well as images showing the construction of preprocessed data and the BERT features
+You can find an example for the construction of the data_file under [Example data](Pretraining Code/Data Pre-processing Code/Example data) as well as images showing the construction of preprocessed data and the BERT features
 
 #### Fine-tuning Tutorial
 
-To see an example of how to use Med-BERT for a specific disease prediction task, you can follow the ![Med-BERT DHF prediction notebook](Fine-Tunning Tutorials/predicting_DHF_MED_BERT_LR.ipynb)
+To see an example of how to use Med-BERT for a specific disease prediction task, you can follow the [Med-BERT DHF prediction notebook](Fine-Tunning Tutorials/predicting_DHF_MED_BERT_LR.ipynb)
 
 Kindly note that you need to use the following code for preparing the fine-tunning data using (create_ehr_pretrain_FTdata.py) in a similar way of preparing the pretraining data.
 
