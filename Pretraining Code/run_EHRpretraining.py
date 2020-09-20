@@ -1,4 +1,5 @@
 # coding=utf-8
+# Updated code by Lrasmy based on BERT original code
 # Copyright 2018 The Google AI Language Team Authors.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -188,18 +189,10 @@ def model_fn_builder(bert_config, init_checkpoint, learning_rate,
                     masked_lm_weights, next_sentence_example_loss,
                     next_sentence_log_probs, next_sentence_labels):
         """Computes the loss and accuracy of the model."""
-        #print ('original masked_lm_log_probs',masked_lm_log_probs)
-        #masked_lm_log_probs =tf.Print(masked_lm_log_probs,[masked_lm_log_probs],'original masked_lm_log_probs') #LR tracking 4/25
         masked_lm_log_probs = tf.reshape(masked_lm_log_probs,
                                          [-1, masked_lm_log_probs.shape[-1]])
-        #print ('reshaped masked_lm_log_probs',masked_lm_log_probs)
-        #masked_lm_log_probs =tf.Print(masked_lm_log_probs,[masked_lm_log_probs],'reshaped masked_lm_log_probs') #LR tracking 4/25
         masked_lm_predictions = tf.argmax(
             masked_lm_log_probs, axis=-1, output_type=tf.int32)
-        #print ('masked_lm_predictions',masked_lm_predictions)
-        masked_lm_predictions =tf.Print(masked_lm_predictions,[masked_lm_predictions],'masked_lm_predictions')#LR tracking 4/25
-        masked_lm_ids =tf.Print(masked_lm_ids,[masked_lm_ids],'masked_lm_ids') #LR tracking 4/25
-        exp_log_prop =tf.Print(tf.exp(-masked_lm_example_loss),[tf.exp(-masked_lm_example_loss)],'tf.exp(-masked_lm_example_loss)') #LR tracking 4/25
 #####checkun
         masked_lm_example_loss = tf.reshape(masked_lm_example_loss, [-1])
         masked_lm_ids = tf.reshape(masked_lm_ids, [-1])
@@ -209,9 +202,6 @@ def model_fn_builder(bert_config, init_checkpoint, learning_rate,
             predictions=masked_lm_predictions,
             weights=masked_lm_weights)
         
-        ## added by LR 4/25 based on YX recommendation
-        masked_lm_auc = tf.metrics.auc(labels=masked_lm_ids, predictions=tf.exp(-masked_lm_example_loss))
-        #### here done my addition
         
         masked_lm_mean_loss = tf.metrics.mean(
             values=masked_lm_example_loss, weights=masked_lm_weights)
@@ -230,7 +220,6 @@ def model_fn_builder(bert_config, init_checkpoint, learning_rate,
 
         return {
             "masked_lm_accuracy": masked_lm_accuracy,
-            "masked_lm_auc": masked_lm_auc, ## LR 4/25 based on YX 
             "masked_lm_loss": masked_lm_mean_loss,
             "next_sentence_accuracy": next_sentence_accuracy,
             "next_sentence_loss": next_sentence_mean_loss,
@@ -255,7 +244,7 @@ def model_fn_builder(bert_config, init_checkpoint, learning_rate,
 
 ### get_masked_lm_output hyperParameters: ### LR 4/17/19
 ##### bert_config,
-##### input_tensor= model.get_sequence_output(), #### need to check this later
+##### input_tensor= model.get_sequence_output(), 
 #####  output_weights=model.get_embedding_table(),
 #####  positions= masked_lm_positions,
 #####  label_ids= masked_lm_ids,
@@ -264,11 +253,7 @@ def model_fn_builder(bert_config, init_checkpoint, learning_rate,
 def get_masked_lm_output(bert_config, input_tensor, output_weights, positions,
                          label_ids, label_weights):
   """Get loss and log probs for the masked LM."""
-  #print('original_input',input_tensor)
-  #input_tensor =tf.Print(input_tensor,[input_tensor],'input_tensor')
   input_tensor = gather_indexes(input_tensor, positions)
-  #print('gathered_input',input_tensor) ### LR 4/17/19 tracking
-  #input_tensor =tf.Print(input_tensor,[input_tensor],'input_tensor')
   with tf.variable_scope("cls/predictions"):
     # We apply one more non-linear transformation before the output layer.
     # This matrix is not used after pre-training.
@@ -279,11 +264,7 @@ def get_masked_lm_output(bert_config, input_tensor, output_weights, positions,
           activation=modeling.get_activation(bert_config.hidden_act),
           kernel_initializer=modeling.create_initializer(
               bert_config.initializer_range))
-      #print('Transform1_dense',input_tensor) ### LR 4/17/19 tracking
-      #input_tensor =tf.Print(input_tensor,[input_tensor],'input_tensor')
       input_tensor = modeling.layer_norm(input_tensor)
-      #print('Transform2_layernorm',input_tensor) ### LR 4/17/19 tracking
-      #input_tensor =tf.Print(input_tensor,[input_tensor],'input_tensor')
 
 
     # The output weights are the same as the input embeddings, but there is
@@ -292,62 +273,27 @@ def get_masked_lm_output(bert_config, input_tensor, output_weights, positions,
         "output_bias",
         shape=[bert_config.vocab_size],
         initializer=tf.zeros_initializer())
-    #print('output_weights',output_weights)
-    #print('output_bias',output_bias)
-    #output_bias = tf.Print(output_bias,[output_bias],'output_bias')
     logits = tf.matmul(input_tensor, output_weights, transpose_b=True)
     logits = tf.nn.bias_add(logits, output_bias)
-    #print('logits: (input*embedT)+output_bias',logits) ### LR 4/17/19 tracking
-    #logits = tf.Print(logits,[logits],'logits')
     log_probs = tf.nn.log_softmax(logits, axis=-1)
-    #print('log_probs',log_probs) ### LR 4/17/19 tracking
-    #log_probs = tf.Print(log_probs,[log_probs],'log_probs')
 
     label_ids = tf.reshape(label_ids, [-1])
-    #label_ids = tf.Print(label_ids,[label_ids],'label_ids')
 
     label_weights = tf.reshape(label_weights, [-1])
-    #label_weights = tf.Print(label_weights,[label_weights],'label_weights')
 
     one_hot_labels = tf.one_hot(
         label_ids, depth=bert_config.vocab_size, dtype=tf.float32)
-    #one_hot_labels = tf.Print(one_hot_labels,[one_hot_labels],'the one hot for label ids') ### LR 4/25/19 tracking
-    #print('label_ids',label_ids) ### LR 4/17/19 tracking
-    #print('label_weights_reshaped',label_weights) ### LR 4/17/19 tracking
-    #print('one_hot_labels',one_hot_labels) ### LR 4/17/19 tracking
     
     # The `positions` tensor might be zero-padded (if the sequence is too
     # short to have the maximum number of predictions). The `label_weights`
     # tensor has a value of 1.0 for every real prediction and 0.0 for the
     # padding predictions.
     
-    #per_example_loss = -tf.reduce_sum(log_probs * one_hot_labels, axis=[-1])
     per_example_loss = -tf.reduce_sum(log_probs * one_hot_labels, axis=[-1])
-    #print('per_example_loss = -tf.reduce_sum(log_probs * one_hot_labels, axis=[-1])',per_example_loss)
-    #per_example_loss = tf.Print(per_example_loss,[per_example_loss],'per_example_loss = -tf.reduce_sum(log_probs * one_hot_labels, axis=[-1])') ### LR 4/17/19 tracking
     numerator = tf.reduce_sum(label_weights * per_example_loss)
-    #numerator = tf.Print(numerator,[numerator],'numerator = tf.reduce_sum(label_weights * per_example_loss)') ### LR 4/17/19 tracking
     denominator = tf.reduce_sum(label_weights) + 1e-5
-    #denominator =tf.Print(denominator,[denominator],'denominator = tf.reduce_sum(label_weights) + 1e-5') ### LR 4/17/19 tracking
     loss = numerator / denominator
 
-    '''    
-    #init = tf.global_variables_initializer()
-    with tf.Session() as sess:##  LR_debug
-      #sess.run(init)##LR_debug
-      print('Transform2_layernorm',input_tensor,sess.run(input_tensor)) ### LR 4/17/19 tracking
-      print('output_weights',output_weights,sess.run(output_weights))
-      print('output_bias',output_bias,sess.run(output_bias))
-      print('logits: (input*embedT)+output_bias',logits,sess.run(logits)) ### LR 4/17/19 tracking
-      print('log_probs',log_probs,sess.run(log_probs)) ### LR 4/17/19 tracking
-      print('label_ids',label_ids,sess.run(label_ids)) ### LR 4/17/19 tracking
-      print('label_weights_reshaped',label_weights,sess.run(label_weights)) ### LR 4/17/19 tracking
-      print('one_hot_labels',one_hot_labels,sess.run(one_hot_labels)) ### LR 4/17/19 tracking
-      print('per_example_loss = -tf.reduce_sum(log_probs * one_hot_labels, axis=[-1])',per_example_loss,sess.run(per_example_loss)) ### LR 4/17/19 tracking
-      print('numerator = tf.reduce_sum(label_weights * per_example_loss)',numerator,sess.run(numerator)) ### LR 4/17/19 tracking
-      print('Transform2_layernorm',input_tensor,sess.run(input_tensor)) ### LR 4/17/19 tracking
-      print('loss',loss,sess.run(loss))
-    '''
   return (loss, per_example_loss, log_probs)
 
 
@@ -532,7 +478,6 @@ def main(_):
         max_seq_length=FLAGS.max_seq_length,
         max_predictions_per_seq=FLAGS.max_predictions_per_seq,
         is_training=True)
-    #estimator.train(input_fn=train_input_fn, max_steps=FLAGS.num_train_steps) ## YX commented 4/30
 
 
   if FLAGS.do_eval:
@@ -545,9 +490,6 @@ def main(_):
         max_predictions_per_seq=FLAGS.max_predictions_per_seq,
         is_training=False)
         
-    #Commented LR 4/29 based on YX recommendation  
-    #result = estimator.evaluate(
-    #    input_fn=eval_input_fn, steps=FLAGS.max_eval_steps)
 
     ## added by LR 4/29 based on YX recommendation
     train_spec = tf.estimator.TrainSpec(input_fn=train_input_fn, max_steps=FLAGS.num_train_steps)

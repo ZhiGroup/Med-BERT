@@ -1,3 +1,4 @@
+# lrasmy @ Zhilab 2019/08/19 a modification of the original BERT pretrain data preparation  
 # coding=utf-8
 # Copyright 2018 The Google AI Language Team Authors.
 #
@@ -12,7 +13,7 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-"""Create masked LM/next sentence masked_lm TF examples for BERT."""
+"""Create masked LM/LOS masked_lm TF examples for BERT."""
 
 from __future__ import absolute_import
 from __future__ import division
@@ -28,27 +29,25 @@ flags = tf.flags
 
 FLAGS = flags.FLAGS
 
-## that will be replaced with the visits file
+## this the visits file
 flags.DEFINE_string("input_file", None, "Input training data.")
 
 ## that will be the final model input file
 flags.DEFINE_string( "output_file", None, "Output TF example file (or comma-separated list of files).")
 
-### keep for now
-flags.DEFINE_integer("max_seq_length", 512, "Maximum sequence length.")
 
-### this is very good option, will keep
-flags.DEFINE_integer("max_predictions_per_seq", 5, "Maximum number of masked LM predictions per sequence.")
+flags.DEFINE_integer("max_seq_length", 32, "Maximum sequence length.")
 
-flags.DEFINE_float("masked_lm_prob", 0.15, "Masked LM probability.")
+flags.DEFINE_integer("max_predictions_per_seq", 2, "Maximum number of masked LM predictions per sequence.")
 
-#### will exclude that later as that should be the types file
+flags.DEFINE_float("masked_lm_prob", 0.35, "Masked LM probability.")
+
+#### this is the types file
 flags.DEFINE_string("vocab_file", None, "The vocabulary file / types file that the BERT model was trained on.")
 
-##### not sure if I keep or take out
 flags.DEFINE_integer("random_seed", 12345, "Random seed for data generation.")
 
-#flags.DEFINE_float("short_seq_prob", 0.7,"Probability of creating sequences which are shorter than the maximum length.")
+#flags.DEFINE_float("short_seq_prob", 0.7,"Probability of creating sequences which are shorter than the maximum length.") ## commented as not  used
 
 
 def write_EHRinstance_to_example_files(seqs,max_seq_length, max_predictions_per_seq,masked_lm_prob,vocab, output_files,rng):
@@ -62,17 +61,19 @@ def write_EHRinstance_to_example_files(seqs,max_seq_length, max_predictions_per_
   min_seq_l=max_seq_length
   max_seq_l=0
   for (seq_index, seq) in enumerate(seqs):
-    if len(seq[1])> max_seq_length:
+    if len(seq[-2])> max_seq_length:
       continue
-    if len(seq[1])< min_seq_l:
-      min_seq_l=len(seq[1])
+    if seq[3][0]<=0:
+      continue
+    if len(seq[-2])< min_seq_l:
+      min_seq_l=len(seq[-2])
       print(min_seq_l)
-    if len(seq[1])> max_seq_l:
-      max_seq_l=len(seq[1])
+    if len(seq[-2])> max_seq_l:
+      max_seq_l=len(seq[-2])
       print(max_seq_l)
-    input_seq = seq[1]
+    input_seq = seq[-2]
     input_mask = [1] * len(input_seq)
-    segment_ids = seq[2]
+    segment_ids = seq[-1]
     ##Masking of input
     (input_ids, masked_lm_positions, masked_lm_ids)=create_masked_EHR_predictions(input_seq, masked_lm_prob,max_predictions_per_seq, vocab, rng)  
     assert len(input_ids) <= max_seq_length
@@ -90,8 +91,6 @@ def write_EHRinstance_to_example_files(seqs,max_seq_length, max_predictions_per_
 
 #### Here I need to check the masking code
 
-    #masked_lm_positions = list(instance.masked_lm_positions)
-    #masked_lm_ids = tokenizer.convert_tokens_to_ids(instance.masked_lm_labels)
     masked_lm_weights = [1.0] * len(masked_lm_ids)
 
     while len(masked_lm_positions) < max_predictions_per_seq:
@@ -99,9 +98,11 @@ def write_EHRinstance_to_example_files(seqs,max_seq_length, max_predictions_per_
       masked_lm_ids.append(0)
       masked_lm_weights.append(0.0)
 
-##### Here I need to check the QA thing ### Temp set to random without doing anything to the data
-    #next_sentence_label = 1 if instance.is_random_next else 0
-    next_sentence_label = 1 if rng.random() < 0.5 else 0
+##### In this version I replace the QA thing with the binary label for long LOS (>7 days) 
+
+    if max(seq[1])>7:
+      next_sentence_label=1 #### here it is time between 2 visits
+    else: next_sentence_label=0
     
 #### That is the output I need
     features = collections.OrderedDict()
@@ -146,16 +147,6 @@ MaskedLmInstance = collections.namedtuple("MaskedLmInstance", ["index", "label"]
 
 def create_masked_EHR_predictions(input_seq, masked_lm_prob,max_predictions_per_seq, vocab, rng):
   """Creates the predictions for the masked LM objective."""
-  #print('original_inp_seq',input_seq)
-  #orig_seq=input_seq ## added for inp_seq update issue LR 4/25
-  #cand_indexes = []
-  #for (i, token) in enumerate(tokens):
-  #  if token == "[CLS]" or token == "[SEP]":
-  #    continue
-  #  cand_indexes.append(i)
-
-  #cand_indexes=list(range(len(input_seq)+1))[1:] ## I can use that for the position but not for the mask index 
-  #will use the same but exclude the +1 so I don't mask the fist and last  code
   
   cand_indexes=list(range(len(input_seq)))### LR 4/29 remove[1:]
   rng.shuffle(cand_indexes)
@@ -173,8 +164,7 @@ def create_masked_EHR_predictions(input_seq, masked_lm_prob,max_predictions_per_
       continue
     covered_indexes.add(index)
 
-    #masked_token = None #### need to make sure what I did below is correct
-    masked_token=0 ### comment for now LR 4/25
+    masked_token=0 
     
     # 80% of the time, replace with [MASK]
     if rng.random() < 0.8:
@@ -201,7 +191,6 @@ def create_masked_EHR_predictions(input_seq, masked_lm_prob,max_predictions_per_
   for p in masked_lms:
     masked_lm_positions.append(p.index)
     masked_lm_labels.append(p.label)
-  #print (input_seq,orig_seq,output_tokens, masked_lm_positions, masked_lm_labels)
   return (output_tokens, masked_lm_positions, masked_lm_labels)
 
 ############ Masking Done
@@ -222,18 +211,17 @@ def main(_):
   tf.logging.set_verbosity(tf.logging.INFO)
 
   vocab = pickle.load(open(FLAGS.vocab_file, 'rb'), encoding='bytes')
-  train_data= pickle.load(open(FLAGS.input_file, 'rb'), encoding='bytes')
 
-#  tokenizer = tokenization.FullTokenizer(
-#      vocab_file=FLAGS.vocab_file, do_lower_case=FLAGS.do_lower_case)
+  with open(FLAGS.input_file,'r+b') as f:
+    try:  
+           train_data=[]
+           while True:
+                     tp=pickle.load(f, encoding='bytes')
+                     train_data.extend(tp)
+    except EOFError:
+            pass
 
-#  input_files = []
-#  for input_pattern in FLAGS.input_file.split(","):
-#    input_files.extend(tf.gfile.Glob(input_pattern))
 
-#  tf.logging.info("*** Reading from input files ***")
-#  for input_file in input_files:
-#    tf.logging.info("  %s", input_file)
 
   rng = random.Random(FLAGS.random_seed)
 
