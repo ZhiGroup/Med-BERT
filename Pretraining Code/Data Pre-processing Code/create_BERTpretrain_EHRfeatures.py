@@ -15,9 +15,9 @@
 # limitations under the License.
 """Create masked LM/LOS masked_lm TF examples for BERT."""
 
-from __future__ import absolute_import
-from __future__ import division
-from __future__ import print_function
+#from __future__ import absolute_import
+#from __future__ import division
+#from __future__ import print_function
 
 import collections
 import random
@@ -134,6 +134,7 @@ def write_EHRinstance_to_example_files(seqs,max_seq_length, max_predictions_per_
           values = feature.float_list.value
         tf.logging.info(
             "%s: %s" % (feature_name, " ".join([str(x) for x in values])))
+      #print (features)
 
   for writer in writers:
     writer.close()
@@ -208,7 +209,7 @@ def create_float_feature(values):
 
 
 def main(_):
-  tf.logging.set_verbosity(tf.logging.INFO)
+  #tf.logging.set_verbosity(tf.logging.INFO)
 
   vocab = pickle.load(open(FLAGS.vocab_file, 'rb'), encoding='bytes')
 

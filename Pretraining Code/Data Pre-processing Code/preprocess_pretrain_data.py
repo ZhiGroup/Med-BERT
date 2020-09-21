@@ -84,7 +84,7 @@ if __name__ == '__main__':
   data_diag.columns=['patient_sk','admit_dt_tm','discharge_dt_tm', 'diagnosis', 'poa', 'diagnosis_priority','third_party_ind']
 
   if typeFile=='NA': 
-       types={}
+       types={'empty_pad':0}
   else:
       with open(typeFile, 'rb') as t2:
              types=pickle.load(t2)
