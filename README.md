@@ -16,7 +16,7 @@ To reproduce the steps necessary for pre-training Med-BERT
     python create_BERTpretrain_EHRfeatures.py --input_file=<output_Prefix.bencs.train> --output_file='output_file' --vocab_file=<output_Prefix.types>--max_predictions_per_seq=1 --max_seq_length=64
     python run_EHRpretraining.py --input_file='output_file' --output_dir=<path_to_outputfolder> --do_train=True --do_eval=True --bert_config_file=config.json --train_batch_size=32 --max_seq_length=512 --max_predictions_per_seq=1 --num_train_steps=4500000   --num_warmup_steps=10000 --learning_rate=5e-5
 
-You can find an example for the construction of the data_file under [Example data](Pretraining%20Code/Data%20Pre-processing%20Code/Example%20data) as well as images showing the construction of preprocessed data and the BERT features. Additional details are available under ![](Pretraining%20Code)
+You can find an example for the construction of the data_file under [Example data](Pretraining%20Code/Data%20Pre-processing%20Code/Example%20data) as well as images showing the construction of preprocessed data and the BERT features. Additional details are available under[Pretraining Code](Pretraining%20Code)
 
 <B>Note:</B> We run our code using mainly GPU, while CPU and TPU options migt be available in the code they were not tested.
 
