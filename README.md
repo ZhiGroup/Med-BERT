@@ -18,7 +18,7 @@ To reproduce the steps necessary for pre-training Med-BERT
 
 You can find an example for the construction of the data_file under [Example data](Pretraining%20Code/Data%20Pre-processing%20Code/Example%20data) as well as images showing the construction of preprocessed data and the BERT features.
 
-N.B. We run our code using mainly GPU, while CPU and TPU options migt be available in the code they were not tested.
+<B>Note:</B> We run our code using mainly GPU, while CPU and TPU options migt be available in the code they were not tested.
 
 #### Fine-tuning Tutorial
 
@@ -40,7 +40,7 @@ Kindly note that you need to use the following code for preparing the fine-tunni
 
 ### Results
  ![Med-BERT Results](Med-BERT%20results.jpg) 
-<B>Prediction results for the evaluation sets by training on different sizes of data on DHF-Cerner (top), PaCa-Cerner (middle), and PaCa-Truven (bottom). The shadows indicate the standard deviations. Please refer to our paper for more details.
+<B>Prediction results for the evaluation sets by training on different sizes of data on DHF-Cerner (top), PaCa-Cerner (middle), and PaCa-Truven (bottom). The shadows indicate the standard deviations. Please refer to our paper for more details.</B>
  
 ### Contact
 
