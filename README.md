@@ -42,6 +42,10 @@ Kindly note that you need to use the following code for preparing the fine-tunni
  ![Med-BERT Results](Med-BERT%20results.jpg) 
 <B>Prediction results for the evaluation sets by training on different sizes of data on DHF-Cerner (top), PaCa-Cerner (middle), and PaCa-Truven (bottom). The shadows indicate the standard deviations. Please refer to our paper for more details.</B>
  
+### Sharing pre-trained model
+
+Details are still being worked out on how to share the pre-trained model in a responsible manner. Stay tuned.
+
 ### Contact
 
 Please post a Github issue if you have any questions.
