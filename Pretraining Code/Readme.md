@@ -50,6 +50,8 @@ For the MedBERT Pretraining you can run a command like:
 
     python run_EHRpretraining.py --input_file='output_file' --output_dir=<path_to_outputfolder> --do_train=True --do_eval=True --bert_config_file=config.json --train_batch_size=32 --max_seq_length=512 --max_predictions_per_seq=1 --num_train_steps=4500000   --num_warmup_steps=10000 --learning_rate=5e-5
 
+You can replace [run_EHRpretraining.py](run_EHRpretraining.py) with [run_EHRpretraining_QA2Seq.py](run_EHRpretraining_QA2Seq.py) to ensure that your pretraining classification task is using the whole sequence rather than the first token
+
 you can monitor the pretraining evaluation using Tensorboard  using command like:
     
     tensorboard --logdir <path_to_outputfolder>
