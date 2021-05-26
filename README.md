@@ -45,7 +45,8 @@ Kindly note that you need to use the following code for preparing the fine-tunni
  
 ## Sharing pre-trained model
 
-Details are still being worked out on how to share the pre-trained model in a responsible manner. Stay tuned.
+Initially we really hoped to share our models but unfortunately, the pre-trained models are no longer sharable. 
+According to SBMI Data Service Office: "Under the terms of our contracts with data vendors, we are not permitted to share any of the data utilized in our publications, as well as large models derived from those data." 
 
 ## Contact
 
@@ -55,7 +56,7 @@ Please post a Github issue if you have any questions.
 
 Please acknowledge the following work in papers or derivative software:
 
-Laila Rasmy, Yang Xiang, Ziqian Xie, Cui Tao, and Degui Zhi. "Med-BERT: pre-trained contextualized embeddings on large-scale structured electronic health records for disease prediction." arXiv preprint arXiv:2005.12833 (2020).
+Laila Rasmy, Yang Xiang, Ziqian Xie, Cui Tao, and Degui Zhi. "Med-BERT: pre-trained contextualized embeddings on large-scale structured electronic health records for disease prediction." npj digital medicine 2021 https://www.nature.com/articles/s41746-021-00455-y.
 
 
 
