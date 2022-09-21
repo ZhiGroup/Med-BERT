@@ -22,7 +22,7 @@
 import collections
 import random
 #import tokenization
-import tensorflow as tf
+import tensorflow.compat.v1 as tf
 import pickle
 
 flags = tf.flags

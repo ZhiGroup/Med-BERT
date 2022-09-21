@@ -22,7 +22,10 @@ from __future__ import print_function
 import os
 import modeling
 import optimization
-import tensorflow as tf
+import tensorflow.compat.v1 as tf
+
+tf.logging.set_verbosity(tf.logging.INFO)
+logger = tf.get_logger()
 
 flags = tf.flags
 
@@ -115,9 +118,9 @@ def model_fn_builder(bert_config, init_checkpoint, learning_rate,
   def model_fn(features, labels, mode, params):  # pylint: disable=unused-argument
     """The `model_fn` for TPUEstimator."""
 
-    tf.logging.info("*** Features ***")
+    logger.info("*** Features ***")
     for name in sorted(features.keys()):
-      tf.logging.info("  name = %s, shape = %s" % (name, features[name].shape))
+      logger.info("  name = %s, shape = %s" % (name, features[name].shape))
 
     input_ids = features["input_ids"]
     input_mask = features["input_mask"]
@@ -146,7 +149,7 @@ def model_fn_builder(bert_config, init_checkpoint, learning_rate,
      next_sentence_log_probs) = get_next_sentence_output(
          bert_config, model.get_pooled_output(), next_sentence_labels)
 
-    total_loss = masked_lm_loss + next_sentence_loss
+    total_loss = masked_lm_loss #+ next_sentence_loss
 
     tvars = tf.trainable_variables()
 
@@ -165,12 +168,12 @@ def model_fn_builder(bert_config, init_checkpoint, learning_rate,
       else:
         tf.train.init_from_checkpoint(init_checkpoint, assignment_map)
 
-    tf.logging.info("**** Trainable Variables ****")
+    logger.info("**** Trainable Variables ****")
     for var in tvars:
       init_string = ""
       if var.name in initialized_variable_names:
         init_string = ", *INIT_FROM_CKPT*"
-      tf.logging.info("  name = %s, shape = %s%s", var.name, var.shape,
+      logger.info("  name = %s, shape = %s%s", var.name, var.shape,
                       init_string)
 
     output_spec = None
@@ -178,10 +181,12 @@ def model_fn_builder(bert_config, init_checkpoint, learning_rate,
       train_op = optimization.create_optimizer(
           total_loss, learning_rate, num_train_steps, num_warmup_steps, use_tpu)
 
-      output_spec = tf.contrib.tpu.TPUEstimatorSpec(
+      logging_hook = tf.train.LoggingTensorHook({"loss": total_loss}, every_n_iter=10)
+      output_spec = tf.estimator.tpu.TPUEstimatorSpec(
           mode=mode,
           loss=total_loss,
           train_op=train_op,
+          training_hooks=[logging_hook],
           scaffold_fn=scaffold_fn)
     elif mode == tf.estimator.ModeKeys.EVAL:
 
@@ -230,7 +235,7 @@ def model_fn_builder(bert_config, init_checkpoint, learning_rate,
           masked_lm_weights, next_sentence_example_loss,
           next_sentence_log_probs, next_sentence_labels
       ])
-      output_spec = tf.contrib.tpu.TPUEstimatorSpec(
+      output_spec = tf.estimator.tpu.TPUEstimatorSpec(
           mode=mode,
           loss=total_loss,
           eval_metrics=eval_metrics,
@@ -377,7 +382,7 @@ def input_fn_builder(input_files,
       # `sloppy` mode means that the interleaving is not exact. This adds
       # even more randomness to the training pipeline.
       d = d.apply(
-          tf.contrib.data.parallel_interleave(
+          tf.data.experimental.parallel_interleave(
               tf.data.TFRecordDataset,
               sloppy=is_training,
               cycle_length=cycle_length))
@@ -393,7 +398,7 @@ def input_fn_builder(input_files,
     # and we *don't* want to drop the remainder, otherwise we wont cover
     # every sample.
     d = d.apply(
-        tf.contrib.data.map_and_batch(
+        tf.data.experimental.map_and_batch(
             lambda record: _decode_record(record, name_to_features),
             batch_size=batch_size,
             num_parallel_batches=num_cpu_threads,
@@ -419,7 +424,6 @@ def _decode_record(record, name_to_features):
 
 
 def main(_):
-  tf.logging.set_verbosity(tf.logging.INFO)
 
   if not FLAGS.do_train and not FLAGS.do_eval:
     raise ValueError("At least one of `do_train` or `do_eval` must be True.")
@@ -432,22 +436,22 @@ def main(_):
   for input_pattern in FLAGS.input_file.split(","):
     input_files.extend(tf.gfile.Glob(input_pattern))
 
-  tf.logging.info("*** Input Files ***")
+  logger.info("*** Input Files ***")
   for input_file in input_files:
-    tf.logging.info("  %s" % input_file)
+    logger.info("  %s" % input_file)
 
   tpu_cluster_resolver = None
   if FLAGS.use_tpu and FLAGS.tpu_name:
     tpu_cluster_resolver = tf.contrib.cluster_resolver.TPUClusterResolver(
         FLAGS.tpu_name, zone=FLAGS.tpu_zone, project=FLAGS.gcp_project)
 
-  is_per_host = tf.contrib.tpu.InputPipelineConfig.PER_HOST_V2
-  run_config = tf.contrib.tpu.RunConfig(
+  is_per_host = tf.estimator.tpu.InputPipelineConfig.PER_HOST_V2
+  run_config = tf.estimator.tpu.RunConfig(
       cluster=tpu_cluster_resolver,
       master=FLAGS.master,
       model_dir=FLAGS.output_dir,
       save_checkpoints_steps=FLAGS.save_checkpoints_steps,
-      tpu_config=tf.contrib.tpu.TPUConfig(
+      tpu_config=tf.estimator.tpu.TPUConfig(
           iterations_per_loop=FLAGS.iterations_per_loop,
           num_shards=FLAGS.num_tpu_cores,
           per_host_input_for_training=is_per_host))
@@ -463,7 +467,7 @@ def main(_):
 
   # If TPU is not available, this will fall back to normal Estimator on CPU
   # or GPU.
-  estimator = tf.contrib.tpu.TPUEstimator(
+  estimator = tf.estimator.tpu.TPUEstimator(
       use_tpu=FLAGS.use_tpu,
       model_fn=model_fn,
       config=run_config,
@@ -471,8 +475,8 @@ def main(_):
       eval_batch_size=FLAGS.eval_batch_size)
 
   if FLAGS.do_train:
-    tf.logging.info("***** Running training *****")
-    tf.logging.info("  Batch size = %d", FLAGS.train_batch_size)
+    logger.info("***** Running training *****")
+    logger.info("  Batch size = %d", FLAGS.train_batch_size)
     train_input_fn = input_fn_builder(
         input_files=input_files,
         max_seq_length=FLAGS.max_seq_length,
@@ -481,8 +485,8 @@ def main(_):
 
 
   if FLAGS.do_eval:
-    tf.logging.info("***** Running evaluation *****")
-    tf.logging.info("  Batch size = %d", FLAGS.eval_batch_size)
+    logger.info("***** Running evaluation *****")
+    logger.info("  Batch size = %d", FLAGS.eval_batch_size)
 
     eval_input_fn = input_fn_builder(
         input_files=input_files,
@@ -502,9 +506,9 @@ def main(_):
     
     output_eval_file = os.path.join(FLAGS.output_dir, "eval_results.txt")
     with tf.gfile.GFile(output_eval_file, "w") as writer:
-      tf.logging.info("***** Eval results *****")
+      logger.info("***** Eval results *****")
       for key in sorted(result.keys()):
-        tf.logging.info("  %s = %s", key, str(result[key]))
+        logger.info("  %s = %s", key, str(result[key]))
         writer.write("%s = %s\n" % (key, str(result[key])))
 
 

@@ -25,7 +25,7 @@ import math
 import re
 import numpy as np
 import six
-import tensorflow as tf
+import tensorflow.compat.v1 as tf
 
 
 class BertConfig(object):
@@ -90,7 +90,7 @@ class BertConfig(object):
   @classmethod
   def from_json_file(cls, json_file):
     """Constructs a `BertConfig` from a json file of parameters."""
-    with tf.gfile.GFile(json_file, "r") as reader:
+    with tf.io.gfile.GFile(json_file, "r") as reader:
       text = reader.read()
     return cls.from_dict(json.loads(text))
 
@@ -361,8 +361,8 @@ def dropout(input_tensor, dropout_prob):
 
 def layer_norm(input_tensor, name=None):
   """Run layer normalization on the last dimension of the tensor."""
-  return tf.contrib.layers.layer_norm(
-      inputs=input_tensor, begin_norm_axis=-1, begin_params_axis=-1, scope=name)
+  layer_norma = tf.keras.layers.LayerNormalization(axis = -1,name=name if name else "LayerNorm")
+  return layer_norma(input_tensor)
 
 
 def layer_norm_and_dropout(input_tensor, dropout_prob, name=None):
