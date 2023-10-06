@@ -1,5 +1,8 @@
+
 #  UNDER CONSRUCTION ####
-##Med-BERT
+
+
+## Med-BERT
 This repository provides the code for pre-training and fine-tuning Med-BERT, a contextualized embedding model that delivers a meaningful performance boost for real-world disease-prediction problems as compared to state-of-the-art models.
 
 ## Overview
