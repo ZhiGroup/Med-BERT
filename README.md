@@ -20,15 +20,15 @@ To reproduce the steps necessary for pre-training Med-BERT
     python create_BERTpretrain_EHRfeatures.py --input_file=<output_Prefix.bencs.train> --output_file='output_file' --vocab_file=<output_Prefix.types>--max_predictions_per_seq=1 --max_seq_length=64
     python run_EHRpretraining.py --input_file='output_file' --output_dir=<path_to_outputfolder> --do_train=True --do_eval=True --bert_config_file=config.json --train_batch_size=32 --max_seq_length=512 --max_predictions_per_seq=1 --num_train_steps=4500000   --num_warmup_steps=10000 --learning_rate=5e-5
 
-You can find an example for the construction of the data_file under [Example data](Pretraining%20Code/Data%20Pre-processing%20Code/Example%20data) as well as images showing the construction of preprocessed data and the BERT features. Additional details are available under [Pretraining Tutorial](Pretraining%20Code)
+You can find an example of the construction of the data_file under [Example data](Pretraining%20Code/Data%20Pre-processing%20Code/Example%20data) as well as images showing the construction of preprocessed data and the BERT features. Additional details are available under [Pretraining Tutorial](Pretraining%20Code)
 
-<B>Note:</B> We run our code using mainly GPU, while CPU and TPU options migt be available in the code they were not tested.
+<B>Note:</B> We run our code using mainly GPU, while CPU and TPU options might be available in the code they were not tested.
 
 ### Fine-tuning 
 
 To see an example of how to use Med-BERT for a specific disease prediction task, you can follow the [Med-BERT DHF prediction notebook](Fine-Tunning%20Tutorials/predicting_DHF_MED_BERT_LR.ipynb)
 
-Kindly note that you need to use the following code for preparing the fine-tunning data using (create_ehr_pretrain_FTdata.py) in a similar way of preparing the pretraining data.
+Kindly note that you need to use the following code for preparing the fine-tuning data using (create_ehr_pretrain_FTdata.py) in a similar way of preparing the pretraining data.
 
 
 ## Dependencies
@@ -49,12 +49,15 @@ Kindly note that you need to use the following code for preparing the fine-tunni
  
 ## Sharing pre-trained model
 
-Initially we really hoped to share our models but unfortunately, the pre-trained models are no longer sharable. 
-According to SBMI Data Service Office: "Under the terms of our contracts with data vendors, we are not permitted to share any of the data utilized in our publications, as well as large models derived from those data." 
+We trained new versions of Med-BERT adding medications and procedures data namely MBv2-EHR and MBv2-Claims. MBv2-Claims model was trained on Optum de-identified Optum Clinformatics® Data Mart (Optum CDM) claims database. For more details please refer to [this paper](https://static1.squarespace.com/static/59d5ac1780bd5ef9c396eda6/t/62e97e4cdcda5d1fe33ff93e/1659469388587/92+MBV2_mlforhc_v4.pdf).
+
+Although the original paper used Cerner HealthFacts EHR data that we did not have permission to share. Optum gratefully approved us to share the MBv2-Claims model. 
+
+In order to access our MBv2-claims pre-trained model, please fill out [this form](https://forms.gle/Xu44ESaDr5ttqStr8), and we will email you the instructions to access our model.
 
 ## Contact
 
-Please post a Github issue if you have any questions.
+Please post a GitHub issue if you have any questions.
 
 ## Citation
 
